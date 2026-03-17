@@ -10,7 +10,7 @@ import polars as pl
 import streamlit as st
 
 from ttg.cost_lookup import lookup_targets, lookup_targets_advanced
-from ttg.newcostlookup import expand_required_targets_from_tc_prereqs, lookup_building_cost
+from ttg.newcostlookup import expand_required_targets_from_tc_prereqs, lookup_building_cost, get_scenario_flags
 from ttg.planner import (
     compare_plan_set,
     evaluate_plan,
@@ -310,14 +310,49 @@ def _build_advanced_probability_table(
 
 @st.cache_data(show_spinner=False)
 def _simple_scenario_summary(start_tg_level: int, target_tg_level: int, scenario: str) -> pd.DataFrame:
-    return pd.DataFrame(
-        [{
-            "Mode": "simple",
-            "Scenario": scenario,
-            "Start TG": start_tg_level,
-            "Target TG": target_tg_level,
-        }]
-    )
+    scenario_flags = get_scenario_flags(scenario)
+    requested_targets = {
+        b: int(target_tg_level)
+        for b in BUILDINGS
+        if bool(scenario_flags.get(b, False))
+    }
+    expanded_targets = expand_required_targets_from_tc_prereqs(requested_targets)
+
+    rows = []
+    for b in BUILDINGS:
+        start = int(start_tg_level)
+        requested = requested_targets.get(b)
+        expanded = expanded_targets.get(b)
+        forced = expanded is not None and (requested is None or int(expanded) > int(requested))
+
+        tg_cost = None
+        ttg_cost = None
+        final_target = None
+        if expanded is not None and int(expanded) > start:
+            final_target = int(expanded)
+            try:
+                cost = lookup_building_cost(b, start, final_target)
+                tg_cost = cost.truegold
+                ttg_cost = cost.tempered_truegold
+            except Exception:
+                tg_cost = None
+                ttg_cost = None
+
+        rows.append(
+            {
+                "building": b,
+                "start": start,
+                "requested_target": int(requested) if requested is not None else None,
+                "final_target": final_target,
+                "forced_by_prereq": forced,
+                "tg_cost": tg_cost,
+                "ttg_cost": ttg_cost,
+                "included_in_scenario": bool(scenario_flags.get(b, False)),
+                "scenario": scenario,
+            }
+        )
+
+    return pd.DataFrame(rows)
 
 
 def _normalize_probability_text(value: str) -> float | None:
@@ -842,6 +877,16 @@ with tab6:
         val_df = _simple_scenario_summary(start_tg_level, target_tg_level, scenario)
         val_df["building_cost_tg_total"] = target_tg
         val_df["target_ttg_total"] = target_ttg
+
+        forced_df = val_df[val_df["forced_by_prereq"] == True].copy()
+        if not forced_df.empty:
+            st.markdown("### Forced prerequisite updates")
+            st.dataframe(
+                forced_df[["building", "start", "requested_target", "final_target", "tg_cost", "ttg_cost"]],
+                use_container_width=True,
+                hide_index=True,
+            )
+
         st.markdown("### Scenario validation")
         st.dataframe(val_df, use_container_width=True, hide_index=True)
         _download_csv_button(val_df, "Download validation CSV", "validation_simple.csv", "dl_validation_simple")
