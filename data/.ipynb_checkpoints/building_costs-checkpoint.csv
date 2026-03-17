@@ -1,0 +1,65 @@
+Building,FromTG,ToTG,Truegold,TemperedTruegold
+Town Center,0,1,660,0
+Town Center,1,2,790,0
+Town Center,2,3,1190,0
+Town Center,3,4,1400,0
+Town Center,4,5,1675,0
+Town Center,5,6,900,60
+Town Center,6,7,1080,90
+Town Center,7,8,1080,120
+Embassy,0,1,165,0
+Embassy,1,2,195,0
+Embassy,2,3,295,0
+Embassy,3,4,350,0
+Embassy,4,5,415,0
+Embassy,5,6,225,13
+Embassy,6,7,270,19
+Embassy,7,8,270,30
+Command Center,0,1,130,0
+Command Center,1,2,155,0
+Command Center,2,3,235,0
+Command Center,3,4,280,0
+Command Center,4,5,335,0
+Command Center,5,6,180,12
+Command Center,6,7,216,18
+Command Center,7,8,216,24
+Infirmary,0,1,130,0
+Infirmary,1,2,155,0
+Infirmary,2,3,235,0
+Infirmary,3,4,280,0
+Infirmary,4,5,335,0
+Infirmary,5,6,180,12
+Infirmary,6,7,216,18
+Infirmary,7,8,216,24
+Barracks,0,1,295,0
+Barracks,1,2,355,0
+Barracks,2,3,535,0
+Barracks,3,4,630,0
+Barracks,4,5,750,0
+Barracks,5,6,405,25
+Barracks,6,7,486,37
+Barracks,7,8,486,55
+Range,0,1,295,0
+Range,1,2,355,0
+Range,2,3,535,0
+Range,3,4,630,0
+Range,4,5,750,0
+Range,5,6,405,25
+Range,6,7,486,37
+Range,7,8,486,55
+Stable,0,1,295,0
+Stable,1,2,355,0
+Stable,2,3,535,0
+Stable,3,4,630,0
+Stable,4,5,750,0
+Stable,5,6,405,25
+Stable,6,7,486,37
+Stable,7,8,486,55
+War Academy,0,1,0,0
+War Academy,1,2,355,0
+War Academy,2,3,535,0
+War Academy,3,4,630,0
+War Academy,4,5,750,0
+War Academy,5,6,405,25
+War Academy,6,7,486,37
+War Academy,7,8,486,54

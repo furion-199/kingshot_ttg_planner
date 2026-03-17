@@ -1,0 +1,49 @@
+TargetTG,ScenarioID,ScenarioName,TC,Embassy,CC,Infirmary,Barracks,Range,Stable,War Academy,Truegold,TemperedTruegold
+6,TC_RBS,TC + all 3 troop buildings,6,5,5,5,6,6,6,5,2115,135
+6,TC_R,TC + Range,6,5,5,5,5,6,5,5,1305,85
+6,TC_B,TC + Barracks,6,5,5,5,6,5,5,5,1305,85
+6,TC_S,TC + Stable,6,5,5,5,5,5,6,5,1305,85
+6,TC_RB,TC + Range + Barracks,6,5,5,5,6,6,5,5,1710,110
+6,TC_RS,TC + Range + Stable,6,5,5,5,5,6,6,5,1710,110
+6,TC_BS,TC + Barracks + Stable,6,5,5,5,6,5,6,5,1710,110
+6,TC_CC,TC + Command Center,6,5,6,5,5,5,5,5,1080,72
+6,TC_RBS_CC,TC + all 3 troop buildings + CC,6,5,6,5,6,6,6,5,2295,147
+6,TC_R_CC,TC + Range + CC,6,5,6,5,5,6,5,5,1485,97
+6,TC_B_CC,TC + Barracks + CC,6,5,6,5,6,5,5,5,1485,97
+6,TC_S_CC,TC + Stable + CC,6,5,6,5,5,5,6,5,1485,97
+6,TC_RB_CC,TC + Range + Barracks + CC,6,5,6,5,6,6,5,5,1890,122
+6,TC_RS_CC,TC + Range + Stable + CC,6,5,6,5,5,6,6,5,1890,122
+6,TC_BS_CC,TC + Barracks + Stable + CC,6,5,6,5,6,5,6,5,1890,122
+6,ALL_TG,All TG buildings + War Academy,6,6,6,6,6,6,6,6,3105,197
+7,TC_RBS,TC + all 3 troop buildings,7,6,5,5,7,7,7,5,4878,349
+7,TC_R,TC + Range,7,6,5,5,5,7,5,5,3096,225
+7,TC_B,TC + Barracks,7,6,5,5,7,6,5,5,3501,250
+7,TC_S,TC + Stable,7,6,5,5,5,6,7,5,3501,250
+7,TC_RB,TC + Range + Barracks,7,6,5,5,7,7,5,5,3987,287
+7,TC_RS,TC + Range + Stable,7,6,5,5,5,7,7,5,3987,287
+7,TC_BS,TC + Barracks + Stable,7,6,5,5,7,6,7,5,4392,312
+7,TC_CC,TC + Command Center,7,6,7,5,5,6,5,5,3006,218
+7,TC_RBS_CC,TC + all 3 troop buildings + CC,7,6,7,5,7,7,7,5,5274,379
+7,TC_R_CC,TC + Range + CC,7,6,7,5,5,7,5,5,3492,255
+7,TC_B_CC,TC + Barracks + CC,7,6,7,5,7,6,5,5,3897,280
+7,TC_S_CC,TC + Stable + CC,7,6,7,5,5,6,7,5,3897,280
+7,TC_RB_CC,TC + Range + Barracks + CC,7,6,7,5,7,7,5,5,4383,317
+7,TC_RS_CC,TC + Range + Stable + CC,7,6,7,5,5,7,7,5,4383,317
+7,TC_BS_CC,TC + Barracks + Stable + CC,7,6,7,5,7,6,7,5,4788,342
+7,ALL_TG,All TG buildings + War Academy,7,7,7,7,7,7,7,7,6831,490
+8,TC_RBS,TC + all 3 troop buildings,8,7,5,5,8,8,8,5,7686,653
+8,TC_R,TC + Range,8,7,5,5,5,8,7,5,5823,481
+8,TC_B,TC + Barracks,8,7,5,5,8,6,7,5,6228,506
+8,TC_S,TC + Stable,8,7,5,5,5,6,8,5,5337,444
+8,TC_RB,TC + Range + Barracks,8,7,5,5,8,8,7,5,7200,598
+8,TC_RS,TC + Range + Stable,8,7,5,5,5,8,8,5,6309,536
+8,TC_BS,TC + Barracks + Stable,8,7,5,5,8,6,8,5,6714,561
+8,TC_CC,TC + Command Center,8,7,8,5,5,6,7,5,5463,443
+8,TC_RBS_CC,TC + all 3 troop buildings + CC,8,7,8,5,8,8,8,5,8298,707
+8,TC_R_CC,TC + Range + CC,8,7,8,5,5,8,7,5,6435,535
+8,TC_B_CC,TC + Barracks + CC,8,7,8,5,8,6,7,5,6840,560
+8,TC_S_CC,TC + Stable + CC,8,7,8,5,5,6,8,5,5949,498
+8,TC_RB_CC,TC + Range + Barracks + CC,8,7,8,5,8,8,7,5,7812,652
+8,TC_RS_CC,TC + Range + Stable + CC,8,7,8,5,5,8,8,5,6921,590
+8,TC_BS_CC,TC + Barracks + Stable + CC,8,7,8,5,8,6,8,5,7326,615
+8,ALL_TG,All TG buildings + War Academy,8,8,8,8,8,8,8,8,10557,907

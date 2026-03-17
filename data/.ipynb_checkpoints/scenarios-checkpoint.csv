@@ -1,0 +1,17 @@
+ScenarioID,ScenarioName,TC,Embassy,Command Center,Infirmary,Barracks,Range,Stable,War Academy
+TC_RBS,TC + all 3 troop buildings,1,0,0,0,1,1,1,0
+TC_R,TC + Range,1,0,0,0,0,1,0,0
+TC_B,TC + Barracks,1,0,0,0,1,0,0,0
+TC_S,TC + Stable,1,0,0,0,0,0,1,0
+TC_RB,TC + Range + Barracks,1,0,0,0,1,1,0,0
+TC_RS,TC + Range + Stable,1,0,0,0,0,1,1,0
+TC_BS,TC + Barracks + Stable,1,0,0,0,1,0,1,0
+TC_CC,TC + Command Center,1,0,1,0,0,0,0,0
+TC_RBS_CC,TC + all 3 troop buildings + CC,1,0,1,0,1,1,1,0
+TC_R_CC,TC + Range + CC,1,0,1,0,0,1,0,0
+TC_B_CC,TC + Barracks + CC,1,0,1,0,1,0,0,0
+TC_S_CC,TC + Stable + CC,1,0,1,0,0,0,1,0
+TC_RB_CC,TC + Range + Barracks + CC,1,0,1,0,1,1,0,0
+TC_RS_CC,TC + Range + Stable + CC,1,0,1,0,0,1,1,0
+TC_BS_CC,TC + Barracks + Stable + CC,1,0,1,0,1,0,1,0
+ALL_TG,All TG buildings + War Academy,1,1,1,1,1,1,1,1

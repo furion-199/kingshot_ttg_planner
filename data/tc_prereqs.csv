@@ -1,0 +1,10 @@
+TargetTG,EmbassyReq,BarracksReq,RangeReq,StableReq,Notes
+0,0,0,0,0,Cumulative minimum prereq TG levels needed to reach the target TC tier.
+1,0,0,0,0,TG1 has no TG prereqs.
+2,1,0,0,1,TG2 requires Embassy TG1 and Stable TG1.
+3,2,2,0,1,Example: TG3 keeps Stable at 1 because TG2 required it earlier in the path.
+4,3,2,3,1,
+5,4,2,3,4,
+6,5,5,3,4,
+7,6,5,6,4,
+8,7,5,6,7,

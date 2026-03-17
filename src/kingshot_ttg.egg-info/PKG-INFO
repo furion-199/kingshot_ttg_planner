@@ -1,0 +1,16 @@
+Metadata-Version: 2.4
+Name: kingshot-ttg
+Version: 0.1.0
+Summary: Add your description here
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: black>=26.3.0
+Requires-Dist: ipykernel>=7.2.0
+Requires-Dist: jupyterlab>=4.5.5
+Requires-Dist: matplotlib>=3.10.8
+Requires-Dist: numpy>=2.4.3
+Requires-Dist: polars>=1.38.1
+Requires-Dist: pyarrow>=23.0.1
+Requires-Dist: pytest>=9.0.2
+Requires-Dist: ruff>=0.15.5
+Requires-Dist: scipy>=1.17.1
