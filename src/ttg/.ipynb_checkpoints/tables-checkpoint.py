@@ -15,7 +15,6 @@ from ttg.planner import (
     even_split_plan,
     normalize_probability_input,
     optimal_plan_from_lookup,
-    plan_table_rows,
 )
 
 
@@ -30,7 +29,6 @@ def _normalize_probability_list(
 ) -> list[float]:
     if probabilities is None:
         return list(DEFAULT_PROBABILITIES)
-
     return [float(normalize_probability_input(p)) for p in probabilities]
 
 
@@ -49,21 +47,62 @@ def build_plan_table(
 ) -> pl.DataFrame:
     """
     Build a Polars table of optimal plans for one TG/scenario combination.
+
+    This version handles unattainable probabilities gracefully by returning a row
+    with status='Unachievable' instead of raising.
     """
     prob_list = _normalize_probability_list(probabilities)
+    target_ttg = lookup_target_ttg(start_tg_level, target_tg_level, scenario)
 
-    rows = plan_table_rows(
-        start_tg_level=start_tg_level,
-        target_tg_level=target_tg_level,
-        scenario=scenario,
-        weeks=weeks,
-        probabilities=prob_list,
-        current_ttg=current_ttg,
-        used_this_week=used_this_week,
-        last_week_days=last_week_days,
-        prob_bucket=prob_bucket,
-        max_frontier_states=max_frontier_states,
-    )
+    rows: list[dict] = []
+
+    for req in prob_list:
+        row = {
+            "start_tg_level": start_tg_level,
+            "target_tg_level": target_tg_level,
+            "scenario": scenario,
+            "requested_probability": req,
+            "target_ttg": target_ttg,
+            "current_ttg": current_ttg,
+            "used_this_week": used_this_week,
+            "last_week_days": last_week_days,
+        }
+
+        try:
+            result = optimal_plan_from_lookup(
+                start_tg_level=start_tg_level,
+                target_tg_level=target_tg_level,
+                scenario=scenario,
+                weeks=weeks,
+                desired_probability=req,
+                current_ttg=current_ttg,
+                used_this_week=used_this_week,
+                last_week_days=last_week_days,
+                prob_bucket=prob_bucket,
+                max_frontier_states=max_frontier_states,
+            )
+
+            for i, refs in enumerate(result.week_refines, start=1):
+                row[f"week_{i}"] = refs
+
+            row["total_refines"] = result.total_refines
+            row["total_cost"] = result.total_cost
+            row["achieved_probability"] = result.achieved_probability
+            row["status"] = "OK"
+
+        except ValueError as exc:
+            # Graceful fallback for unattainable targets/probabilities
+            if "unattainable" in str(exc).lower():
+                for i in range(1, weeks + 1):
+                    row[f"week_{i}"] = None
+                row["total_refines"] = None
+                row["total_cost"] = None
+                row["achieved_probability"] = None
+                row["status"] = "Unachievable"
+            else:
+                raise
+
+        rows.append(row)
 
     df = pl.DataFrame(rows)
 
@@ -82,6 +121,7 @@ def build_plan_table(
         "total_refines",
         "total_cost",
         "achieved_probability",
+        "status",
     ]
 
     existing = [c for c in preferred_order if c in df.columns]
@@ -103,9 +143,6 @@ def build_multi_scenario_table(
     prob_bucket: float = DEFAULT_PROB_BUCKET,
     max_frontier_states: int = DEFAULT_MAX_FRONTIER_STATES,
 ) -> pl.DataFrame:
-    """
-    Build one combined table for multiple scenarios.
-    """
     tables: list[pl.DataFrame] = []
 
     for scenario in scenarios:
@@ -141,9 +178,6 @@ def build_standard_two_week_tables(
     prob_bucket: float = DEFAULT_PROB_BUCKET,
     max_frontier_states: int = DEFAULT_MAX_FRONTIER_STATES,
 ) -> dict[str, pl.DataFrame]:
-    """
-    Build the four standard 2-week scenario tables.
-    """
     prob_list = _normalize_probability_list(probabilities)
 
     configs = {
@@ -186,14 +220,6 @@ def compare_plan_variants(
     prob_bucket: float = DEFAULT_PROB_BUCKET,
     max_frontier_states: int = DEFAULT_MAX_FRONTIER_STATES,
 ) -> pl.DataFrame:
-    """
-    Compare optimizer vs simple benchmark plans for the same scenario.
-
-    Rows included:
-    - optimized
-    - even_split_same_total
-    - all_in
-    """
     result = optimal_plan_from_lookup(
         start_tg_level=start_tg_level,
         target_tg_level=target_tg_level,
@@ -323,9 +349,6 @@ def compare_custom_plan_to_lookup(
     used_this_week: int = 0,
     last_week_days: int = 5,
 ) -> pl.DataFrame:
-    """
-    Evaluate one custom plan against the lookup target.
-    """
     plan_tuple = tuple(int(x) for x in week_refines)
     target_ttg = lookup_target_ttg(start_tg_level, target_tg_level, scenario)
     result = evaluate_plan(
@@ -370,9 +393,6 @@ def compare_optimizer_vs_custom(
     prob_bucket: float = DEFAULT_PROB_BUCKET,
     max_frontier_states: int = DEFAULT_MAX_FRONTIER_STATES,
 ) -> pl.DataFrame:
-    """
-    Compare optimizer result directly against a user-provided custom plan.
-    """
     opt = compare_plan_variants(
         start_tg_level=start_tg_level,
         target_tg_level=target_tg_level,
@@ -402,9 +422,6 @@ def compare_optimizer_vs_custom(
 
 
 def export_table_csv(df: pl.DataFrame, filename: str, *, output_dir: Path | None = None) -> Path:
-    """
-    Export a single Polars DataFrame to CSV.
-    """
     out_dir = output_dir or OUTPUT_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -425,9 +442,6 @@ def export_standard_two_week_tables_csv(
     max_frontier_states: int = DEFAULT_MAX_FRONTIER_STATES,
     output_dir: Path | None = None,
 ) -> dict[str, Path]:
-    """
-    Build and export the standard 2-week tables to CSV files.
-    """
     tables = build_standard_two_week_tables(
         start_tg_level=start_tg_level,
         target_tg_level=target_tg_level,
