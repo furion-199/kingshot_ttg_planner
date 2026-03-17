@@ -10,6 +10,7 @@ import polars as pl
 import streamlit as st
 
 from ttg.cost_lookup import lookup_targets, lookup_targets_advanced
+from ttg.newcostlookup import expand_required_targets_from_tc_prereqs, lookup_building_cost
 from ttg.planner import (
     compare_plan_set,
     evaluate_plan,
@@ -438,16 +439,43 @@ def _summary_df(mode_label: str, building_tg_cost: int, target_ttg: int, weeks: 
 
 
 def _validation_panel_advanced(building_inputs: dict[str, dict[str, int]], building_tg_cost: int, target_ttg: int) -> pd.DataFrame:
+    requested_targets = {
+        b: int(vals["target"])
+        for b, vals in building_inputs.items()
+        if int(vals["target"]) > int(vals["start"])
+    }
+    expanded_targets = expand_required_targets_from_tc_prereqs(requested_targets)
+
     rows = []
-    for b, vals in building_inputs.items():
-        start = vals["start"]
-        target = vals["target"]
-        rows.append({
-            "building": b,
-            "start": start,
-            "target": target,
-            "included": target > start,
-        })
+    for b in BUILDINGS:
+        start = int(building_inputs[b]["start"])
+        requested = int(requested_targets.get(b, start))
+        expanded = int(expanded_targets.get(b, start))
+        forced = expanded > requested
+
+        tg_cost = None
+        ttg_cost = None
+        if expanded > start:
+            try:
+                cost = lookup_building_cost(b, start, expanded)
+                tg_cost = cost.truegold
+                ttg_cost = cost.tempered_truegold
+            except Exception:
+                tg_cost = None
+                ttg_cost = None
+
+        rows.append(
+            {
+                "building": b,
+                "start": start,
+                "requested_target": requested if requested > start else None,
+                "final_target": expanded if expanded > start else None,
+                "forced_by_prereq": forced,
+                "tg_cost": tg_cost,
+                "ttg_cost": ttg_cost,
+            }
+        )
+
     df = pd.DataFrame(rows)
     df["building_cost_tg_total"] = building_tg_cost
     df["target_ttg_total"] = target_ttg
@@ -797,11 +825,23 @@ with tab6:
         st.info("Enter a valid target configuration to view validation details.")
     elif planning_mode == "advanced":
         val_df = _validation_panel_advanced(building_inputs or {}, target_tg, target_ttg)
+
+        forced_df = val_df[val_df["forced_by_prereq"] == True].copy()
+        if not forced_df.empty:
+            st.markdown("### Forced prerequisite updates")
+            st.dataframe(
+                forced_df[["building", "start", "requested_target", "final_target", "tg_cost", "ttg_cost"]],
+                use_container_width=True,
+                hide_index=True,
+            )
+
+        st.markdown("### Full validation table")
         st.dataframe(val_df, use_container_width=True, hide_index=True)
         _download_csv_button(val_df, "Download validation CSV", "validation_advanced.csv", "dl_validation_adv")
     else:
         val_df = _simple_scenario_summary(start_tg_level, target_tg_level, scenario)
         val_df["building_cost_tg_total"] = target_tg
         val_df["target_ttg_total"] = target_ttg
+        st.markdown("### Scenario validation")
         st.dataframe(val_df, use_container_width=True, hide_index=True)
         _download_csv_button(val_df, "Download validation CSV", "validation_simple.csv", "dl_validation_simple")
