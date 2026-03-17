@@ -238,15 +238,14 @@ def expand_required_targets_from_tc_prereqs(
     requested_targets: Mapping[str, int],
 ) -> dict[str, int]:
     """
-    Expand requested building targets using tc_prereqs.csv.
+    Expand requested building targets using:
+    1) global rules:
+       - any building level N requires TC level N
+       - Command Center level N requires Embassy level N
+    2) tc_prereqs.csv:
+       - TC level N requires minimum Embassy/Barracks/Range/Stable levels
 
-    Logic:
-    - keep requested targets
-    - infer required TC target as the max requested TC level
-    - if TC is required, add Embassy/Barracks/Range/Stable minimums from tc_prereqs.csv
-    - repeat until stable in case the expanded targets imply a higher TC target later
-
-    This is intentionally simple and matches the structure of tc_prereqs.csv.
+    This repeats until stable.
     """
     required = {
         canonical_building_name(building): int(level)
@@ -258,6 +257,25 @@ def expand_required_targets_from_tc_prereqs(
     while changed:
         changed = False
 
+        current_items = list(required.items())
+
+        # Rule 1: any non-TC building at level N requires TC level N
+        for building, target_tg in current_items:
+            if building != "TC":
+                old_tc = int(required.get("TC", 0))
+                if int(target_tg) > old_tc:
+                    required["TC"] = int(target_tg)
+                    changed = True
+
+        # Rule 2: Command Center level N requires Embassy level N
+        cc_target = int(required.get("Command Center", 0))
+        if cc_target > 0:
+            old_embassy = int(required.get("Embassy", 0))
+            if cc_target > old_embassy:
+                required["Embassy"] = cc_target
+                changed = True
+
+        # Rule 3: TC level N requires support-building minimums from tc_prereqs.csv
         tc_target = int(required.get("TC", 0))
         if tc_target > 0:
             tc_reqs = tc_requirements_for_target(tc_target)
